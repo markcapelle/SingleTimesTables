@@ -1,180 +1,186 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-<meta charset="UTF-8">
-<title>Times Table Practice</title>
-<style>
-    body {
-        font-family: Arial, sans-serif;
-        background: #f0f0f0;
-        text-align: center;
-        padding-top: 40px;
-    }
-    #gameBox {
-        background: white;
-        width: 400px;
-        margin: auto;
-        padding: 20px;
-        border-radius: 10px;
-        box-shadow: 0 0 10px rgba(0,0,0,0.2);
-    }
-    .answerBtn {
-        display: block;
-        width: 90%;
-        margin: 10px auto;
-        padding: 12px;
-        font-size: 20px;
-        border-radius: 8px;
-        border: none;
-        background: #ddd;
-        cursor: pointer;
-        transition: background 0.2s;
-    }
-    .answerBtn:hover {
-        background: #ccc;
-    }
-    .wrong {
-        background: #ff6b6b !important;
-        color: white;
-    }
-    #timer, #score {
-        font-size: 22px;
-        margin: 10px;
-    }
-    #startBtn {
-        padding: 12px 20px;
-        font-size: 20px;
-        border-radius: 8px;
-        border: none;
-        background: #4CAF50;
-        color: white;
-        cursor: pointer;
-    }
-    #configBox input {
-        width: 80px;
-        padding: 5px;
-        margin: 5px;
-        font-size: 16px;
-        text-align: center;
-    }
-</style>
-</head>
-<body>
+    <head>
+        <meta charset="UTF-8">
 
-<div id="gameBox">
-    <h2>Times Table Practice</h2>
+        <title>Times Table Practice</title>
+        
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                background: #f0f0f0;
+                text-align: center;
+                padding-top: 40px;
+            }
+            #gameBox {
+                background: white;
+                width: 400px;
+                margin: auto;
+                padding: 20px;
+                border-radius: 10px;
+                box-shadow: 0 0 10px rgba(0,0,0,0.2);
+            }
+            .answerBtn {
+                display: block;
+                width: 90%;
+                margin: 10px auto;
+                padding: 12px;
+                font-size: 20px;
+                border-radius: 8px;
+                border: none;
+                background: #ddd;
+                cursor: pointer;
+                transition: background 0.2s;
+            }
+            .answerBtn:hover {
+                background: #ccc;
+            }
+            .wrong {
+                background: #ff6b6b !important;
+                color: white;
+            }
+            #timer, #score {
+                font-size: 22px;
+                margin: 10px;
+            }
+            #startBtn {
+                padding: 12px 20px;
+                font-size: 20px;
+                border-radius: 8px;
+                border: none;
+                background: #4CAF50;
+                color: white;
+                cursor: pointer;
+            }
+            #configBox input {
+                width: 80px;
+                padding: 5px;
+                margin: 5px;
+                font-size: 16px;
+                text-align: center;
+            }
+        </style>
+    </head>
 
-    <!-- CONFIG BOX -->
-    <div id="configBox">
-        <label>Questions: <input id="cfg_questions" type="number" value="27"></label><br>
-        <label>Time (sec): <input id="cfg_time" type="number" value="90"></label><br>
-        <label>Times Table: <input id="cfg_table" type="number" value="13"></label><br>
-        <label>Up to...: <input id="cfg_maxx" type="number" value="12"></label>
-    </div>
+    <body>
 
-    <div id="timer">Time: 0</div>
-    <div id="score">Question: 0</div>
-    <h3 id="questionText">Press Start</h3>
+        <div id="gameBox">
+            <h2>Times Table Practice</h2>
 
-    <div id="answers"></div>
+            <!-- CONFIG BOX -->
+            <div id="configBox">
+                <label>Questions: <input id="cfg_questions" type="number" value="27"></label><br>
+                <label>Time (sec): <input id="cfg_time" type="number" value="90"></label><br>
+                <label>Times Table: <input id="cfg_table" type="number" value="13"></label><br>
+                <label>Up to...: <input id="cfg_maxx" type="number" value="12"></label>
+            </div>
 
-    <button id="startBtn">Start Game</button>
-</div>
+            <!-- GAME INTERFACE -->
+            <div id="timer">Time: 0</div>
+            <div id="score">Question: 0</div>
+            <h3 id="questionText">Press Start</h3>
 
-<script>
-let NUMBER_OF_QUESTIONS = 27;
-let TIME_LIMIT_SECONDS = 90;
-let TIMES_TABLE = 13;
-let MAX_X = 12;
+            <div id="answers"></div>
 
-let timeLeft = TIME_LIMIT_SECONDS;
-let questionCount = 0;
-let correctAnswer = 0;
-let wrongCount = 0;
-let timerInterval;
+            <button id="startBtn">Start Game</button>
+        </div>
 
-function loadConfig() {
-    NUMBER_OF_QUESTIONS = parseInt(document.getElementById("cfg_questions").value);
-    TIME_LIMIT_SECONDS = parseInt(document.getElementById("cfg_time").value);
-    TIMES_TABLE = parseInt(document.getElementById("cfg_table").value);
-    MAX_X = parseInt(document.getElementById("cfg_maxx").value);
-}
+        <script>
+            // DEFAULT VARIABLES
+            let NUMBER_OF_QUESTIONS = 27;
+            let TIME_LIMIT_SECONDS = 90;
+            let TIMES_TABLE = 13;
+            let MAX_X = 12;
 
-function startGame() {
-    loadConfig(); // <--- READ VALUES FROM UI
+            let timeLeft = TIME_LIMIT_SECONDS;
+            let questionCount = 0;
+            let correctAnswer = 0;
+            let wrongCount = 0;
+            let timerInterval;
 
-    timeLeft = TIME_LIMIT_SECONDS;
-    questionCount = 0;
-    wrongCount = 0;
+            function loadConfig() {
+                NUMBER_OF_QUESTIONS = parseInt(document.getElementById("cfg_questions").value);
+                TIME_LIMIT_SECONDS = parseInt(document.getElementById("cfg_time").value);
+                TIMES_TABLE = parseInt(document.getElementById("cfg_table").value);
+                MAX_X = parseInt(document.getElementById("cfg_maxx").value);
+            }
 
-    document.getElementById("timer").innerText = "Time: " + timeLeft;
-    document.getElementById("score").innerText = `Question: 0 / ${NUMBER_OF_QUESTIONS}`;
-    document.getElementById("startBtn").style.display = "none";
+            function startGame() {
+                loadConfig(); // <--- READ VALUES FROM UI
 
-    timerInterval = setInterval(() => {
-        timeLeft--;
-        document.getElementById("timer").innerText = "Time: " + timeLeft;
-        if (timeLeft <= 0) endGame();
-    }, 1000);
+                timeLeft = TIME_LIMIT_SECONDS;
+                questionCount = 0;
+                wrongCount = 0;
 
-    nextQuestion();
-}
+                document.getElementById("timer").innerText = "Time: " + timeLeft;
+                document.getElementById("score").innerText = `Question: 0 / ${NUMBER_OF_QUESTIONS}`;
+                document.getElementById("startBtn").style.display = "none";
 
-function nextQuestion() {
-    if (questionCount >= NUMBER_OF_QUESTIONS) {
-        endGame();
-        return;
-    }
+                timerInterval = setInterval(() => {
+                    timeLeft--;
+                    document.getElementById("timer").innerText = "Time: " + timeLeft;
+                    if (timeLeft <= 0) endGame();
+                }, 1000);
 
-    let x = Math.floor(Math.random() * MAX_X) + 1;
-    correctAnswer = x * TIMES_TABLE;
+                nextQuestion();
+            }
 
-    document.getElementById("questionText").innerText = `${x} × ${TIMES_TABLE} = ?`;
+            function nextQuestion() {
+                if (questionCount >= NUMBER_OF_QUESTIONS) {
+                    endGame();
+                    return;
+                }
 
-    let answers = [correctAnswer];
+                let x = Math.floor(Math.random() * MAX_X) + 1;
+                correctAnswer = x * TIMES_TABLE;
 
-    while (answers.length < 6) {
-        let wrong = correctAnswer + Math.floor(Math.random() * 40) - 20;
-        if (!answers.includes(wrong) && wrong > 0) answers.push(wrong);
-    }
+                document.getElementById("questionText").innerText = `${x} × ${TIMES_TABLE} = ?`;
 
-    answers.sort(() => Math.random() - 0.5);
+                let answers = [correctAnswer];
 
-    let answerBox = document.getElementById("answers");
-    answerBox.innerHTML = "";
+                while (answers.length < 6) {
+                    let wrong = correctAnswer + Math.floor(Math.random() * 40) - 20;
+                    if (!answers.includes(wrong) && wrong > 0) answers.push(wrong);
+                }
 
-    answers.forEach(a => {
-        let btn = document.createElement("button");
-        btn.className = "answerBtn";
-        btn.innerText = a;
-        btn.onclick = () => checkAnswer(a, btn);
-        answerBox.appendChild(btn);
-    });
-}
+                answers.sort(() => Math.random() - 0.5);
 
-function checkAnswer(a, btn) {
-    if (a === correctAnswer) {
-        questionCount++;
-        document.getElementById("score").innerText =
-            `Question: ${questionCount} / ${NUMBER_OF_QUESTIONS}`;
-        nextQuestion();
-    } else {
-        wrongCount++;
-        btn.classList.add("wrong");
-    }
-}
+                let answerBox = document.getElementById("answers");
+                answerBox.innerHTML = "";
 
-function endGame() {
-    clearInterval(timerInterval);
-    document.getElementById("questionText").innerText =
-        `Game Over! You answered ${questionCount} / ${NUMBER_OF_QUESTIONS}.
-         Wrong answers: ${wrongCount}`;
-    document.getElementById("answers").innerHTML = "";
-    document.getElementById("startBtn").style.display = "block";
-}
+                answers.forEach(a => {
+                    let btn = document.createElement("button");
+                    btn.className = "answerBtn";
+                    btn.innerText = a;
+                    btn.onclick = () => checkAnswer(a, btn);
+                    answerBox.appendChild(btn);
+                });
+            }
 
-document.getElementById("startBtn").onclick = startGame;
-</script>
+            function checkAnswer(a, btn) {
+                if (a === correctAnswer) {
+                    questionCount++;
+                    document.getElementById("score").innerText =
+                        `Question: ${questionCount} / ${NUMBER_OF_QUESTIONS}`;
+                    nextQuestion();
+                } else {
+                    wrongCount++;
+                    btn.classList.add("wrong");
+                }
+            }
 
-</body>
+            function endGame() {
+                clearInterval(timerInterval);
+                document.getElementById("questionText").innerText =
+                    `Game Over! You answered ${questionCount} / ${NUMBER_OF_QUESTIONS}.
+                    Wrong answers: ${wrongCount}`;
+                document.getElementById("answers").innerHTML = "";
+                document.getElementById("startBtn").style.display = "block";
+            }
+
+            document.getElementById("startBtn").onclick = startGame;
+        </script>
+
+    </body>
+    
 </html>
