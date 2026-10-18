@@ -50,12 +50,28 @@
         color: white;
         cursor: pointer;
     }
+    #configBox input {
+        width: 80px;
+        padding: 5px;
+        margin: 5px;
+        font-size: 16px;
+        text-align: center;
+    }
 </style>
 </head>
 <body>
 
 <div id="gameBox">
     <h2>Times Table Practice</h2>
+
+    <!-- CONFIG BOX -->
+    <div id="configBox">
+        <label>Questions: <input id="cfg_questions" type="number" value="27"></label><br>
+        <label>Time (sec): <input id="cfg_time" type="number" value="90"></label><br>
+        <label>Times Table: <input id="cfg_table" type="number" value="13"></label><br>
+        <label>Up to...: <input id="cfg_maxx" type="number" value="12"></label>
+    </div>
+
     <div id="timer">Time: 0</div>
     <div id="score">Question: 0</div>
     <h3 id="questionText">Press Start</h3>
@@ -66,25 +82,30 @@
 </div>
 
 <script>
-// ===============================
-// CONFIGURABLE PARAMETERS
-// ===============================
-const NUMBER_OF_QUESTIONS = 27;     // total questions to answer
-const TIME_LIMIT_SECONDS = 90;      // total time allowed
-const TIMES_TABLE = 13;             // which multiplication table
-const MAX_X = 12;                   // highest x value (1..MAX_X)
-// ===============================
+let NUMBER_OF_QUESTIONS = 27;
+let TIME_LIMIT_SECONDS = 90;
+let TIMES_TABLE = 13;
+let MAX_X = 12;
 
 let timeLeft = TIME_LIMIT_SECONDS;
 let questionCount = 0;
 let correctAnswer = 0;
-let wrongCount = 0;   // <--- NEW
+let wrongCount = 0;
 let timerInterval;
 
+function loadConfig() {
+    NUMBER_OF_QUESTIONS = parseInt(document.getElementById("cfg_questions").value);
+    TIME_LIMIT_SECONDS = parseInt(document.getElementById("cfg_time").value);
+    TIMES_TABLE = parseInt(document.getElementById("cfg_table").value);
+    MAX_X = parseInt(document.getElementById("cfg_maxx").value);
+}
+
 function startGame() {
+    loadConfig(); // <--- READ VALUES FROM UI
+
     timeLeft = TIME_LIMIT_SECONDS;
     questionCount = 0;
-    wrongCount = 0;   // <--- RESET ON START
+    wrongCount = 0;
 
     document.getElementById("timer").innerText = "Time: " + timeLeft;
     document.getElementById("score").innerText = `Question: 0 / ${NUMBER_OF_QUESTIONS}`;
@@ -138,8 +159,8 @@ function checkAnswer(a, btn) {
             `Question: ${questionCount} / ${NUMBER_OF_QUESTIONS}`;
         nextQuestion();
     } else {
-        wrongCount++;              // <--- COUNT WRONG CLICK
-        btn.classList.add("wrong"); // highlight wrong answer
+        wrongCount++;
+        btn.classList.add("wrong");
     }
 }
 
