@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Times Table Practice</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background: #f0f0f0;
+        text-align: center;
+        padding-top: 40px;
+    }
+    #gameBox {
+        background: white;
+        width: 400px;
+        margin: auto;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.2);
+    }
+    .answerBtn {
+        display: block;
+        width: 90%;
+        margin: 10px auto;
+        padding: 12px;
+        font-size: 20px;
+        border-radius: 8px;
+        border: none;
+        background: #ddd;
+        cursor: pointer;
+        transition: background 0.2s;
+    }
+    .answerBtn:hover {
+        background: #ccc;
+    }
+    .wrong {
+        background: #ff6b6b !important;
+        color: white;
+    }
+    #timer, #score {
+        font-size: 22px;
+        margin: 10px;
+    }
+    #startBtn {
+        padding: 12px 20px;
+        font-size: 20px;
+        border-radius: 8px;
+        border: none;
+        background: #4CAF50;
+        color: white;
+        cursor: pointer;
+    }
+</style>
+</head>
+<body>
+
+<div id="gameBox">
+    <h2>Times Table Practice</h2>
+    <div id="timer">Time: 0</div>
+    <div id="score">Question: 0</div>
+    <h3 id="questionText">Press Start</h3>
+
+    <div id="answers"></div>
+
+    <button id="startBtn">Start Game</button>
+</div>
+
+<script>
+// ===============================
+// CONFIGURABLE PARAMETERS
+// ===============================
+const NUMBER_OF_QUESTIONS = 27;     // total questions to answer
+const TIME_LIMIT_SECONDS = 90;      // total time allowed
+const TIMES_TABLE = 13;             // which multiplication table
+const MAX_X = 12;                   // highest x value (1..MAX_X)
+// ===============================
+
+let timeLeft = TIME_LIMIT_SECONDS;
+let questionCount = 0;
+let correctAnswer = 0;
+let wrongCount = 0;   // <--- NEW
+let timerInterval;
+
+function startGame() {
+    timeLeft = TIME_LIMIT_SECONDS;
+    questionCount = 0;
+    wrongCount = 0;   // <--- RESET ON START
+
+    document.getElementById("timer").innerText = "Time: " + timeLeft;
+    document.getElementById("score").innerText = `Question: 0 / ${NUMBER_OF_QUESTIONS}`;
+    document.getElementById("startBtn").style.display = "none";
+
+    timerInterval = setInterval(() => {
+        timeLeft--;
+        document.getElementById("timer").innerText = "Time: " + timeLeft;
+        if (timeLeft <= 0) endGame();
+    }, 1000);
+
+    nextQuestion();
+}
+
+function nextQuestion() {
+    if (questionCount >= NUMBER_OF_QUESTIONS) {
+        endGame();
+        return;
+    }
+
+    let x = Math.floor(Math.random() * MAX_X) + 1;
+    correctAnswer = x * TIMES_TABLE;
+
+    document.getElementById("questionText").innerText = `${x} × ${TIMES_TABLE} = ?`;
+
+    let answers = [correctAnswer];
+
+    while (answers.length < 6) {
+        let wrong = correctAnswer + Math.floor(Math.random() * 40) - 20;
+        if (!answers.includes(wrong) && wrong > 0) answers.push(wrong);
+    }
+
+    answers.sort(() => Math.random() - 0.5);
+
+    let answerBox = document.getElementById("answers");
+    answerBox.innerHTML = "";
+
+    answers.forEach(a => {
+        let btn = document.createElement("button");
+        btn.className = "answerBtn";
+        btn.innerText = a;
+        btn.onclick = () => checkAnswer(a, btn);
+        answerBox.appendChild(btn);
+    });
+}
+
+function checkAnswer(a, btn) {
+    if (a === correctAnswer) {
+        questionCount++;
+        document.getElementById("score").innerText =
+            `Question: ${questionCount} / ${NUMBER_OF_QUESTIONS}`;
+        nextQuestion();
+    } else {
+        wrongCount++;              // <--- COUNT WRONG CLICK
+        btn.classList.add("wrong"); // highlight wrong answer
+    }
+}
+
+function endGame() {
+    clearInterval(timerInterval);
+    document.getElementById("questionText").innerText =
+        `Game Over! You answered ${questionCount} / ${NUMBER_OF_QUESTIONS}.
+         Wrong answers: ${wrongCount}`;
+    document.getElementById("answers").innerHTML = "";
+    document.getElementById("startBtn").style.display = "block";
+}
+
+document.getElementById("startBtn").onclick = startGame;
+</script>
+
+</body>
+</html>
