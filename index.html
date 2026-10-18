@@ -69,10 +69,10 @@
 
             <!-- CONFIG BOX -->
             <div id="configBox">
-                <label>Questions: <input id="cfg_questions" type="number" value="27"></label><br>
-                <label>Time (sec): <input id="cfg_time" type="number" value="90"></label><br>
-                <label>Times Table: <input id="cfg_table" type="number" value="13"></label><br>
-                <label>Up to...: <input id="cfg_maxx" type="number" value="12"></label>
+                <label>Questions: <input id="cfg_questions" type="number"></label><br>
+                <label>Time (sec): <input id="cfg_time" type="number"></label><br>
+                <label>Times Table: <input id="cfg_table" type="number"></label><br>
+                <label>Up to...: <input id="cfg_maxx" type="number"></label>
             </div>
 
             <!-- GAME INTERFACE -->
@@ -115,6 +115,9 @@
                 document.getElementById("timer").innerText = "Time: " + timeLeft;
                 document.getElementById("score").innerText = `Question: 0 / ${NUMBER_OF_QUESTIONS}`;
                 document.getElementById("startBtn").style.display = "none";
+
+                // HIDE CONFIG DURING GAME
+                document.getElementById("configBox").style.display = "none";
 
                 timerInterval = setInterval(() => {
                     timeLeft--;
@@ -176,9 +179,20 @@
                     Wrong answers: ${wrongCount}`;
                 document.getElementById("answers").innerHTML = "";
                 document.getElementById("startBtn").style.display = "block";
+
+                // SHOW CONFIG BOX AGAIN
+                document.getElementById("configBox").style.display = "block";
             }
 
             document.getElementById("startBtn").onclick = startGame;
+
+            // SET DEFAULT VALUES IN THE EDIT FORMS
+            window.onload = () => {
+                document.getElementById("cfg_questions").value = NUMBER_OF_QUESTIONS;
+                document.getElementById("cfg_time").value = TIME_LIMIT_SECONDS;
+                document.getElementById("cfg_table").value = TIMES_TABLE;
+                document.getElementById("cfg_maxx").value = MAX_X;
+            };
         </script>
 
     </body>
